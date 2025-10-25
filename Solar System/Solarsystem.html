@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Solar System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f0f 70%, #000000 100%);
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+        }
+
+        .hamburger-icon {
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 10px;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .hamburger-icon:hover {
+            transform: scale(1.1);
+            color: #7b2bf9;
+        }
+
+        .menu-items {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            visibility: hidden;
+            opacity: 0;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            transform: translateY(-20px);
+            transition: all 0.3s ease-in-out;
+            min-width: 200px;
+        }
+
+        .menu-items.active {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+            display: flex;
+        }
+
+        .menu-items a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .menu-items a:hover {
+            background: rgba(123, 43, 249, 0.3);
+            transform: translateX(5px);
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 10px;
+            }
+
+            .solar-system {
+                transform: scale(0.7);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .solar-system {
+                transform: scale(0.5);
+            }
+        }
+
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            perspective: 500px;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        .star.small {
+            width: 1px;
+            height: 1px;
+        }
+
+        .star.medium {
+            width: 2px;
+            height: 2px;
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .star.large {
+            width: 3px;
+            height: 3px;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+        }
+
+        @keyframes twinkle {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .solar-system {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            z-index: 1;
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbitGlow 4s ease-in-out infinite alternate;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes orbitGlow {
+            0% {
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.05);
+            }
+
+            50% {
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+            }
+
+            100% {
+                border-color: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        .sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #ffeb3b 0%, #ffc107 40%, #ff9800 70%, #ff5722 100%);
+            border-radius: 50%;
+            box-shadow:
+                0 0 20px #ff9800,
+                0 0 40px #ff9800,
+                0 0 60px #ff5722;
+            z-index: 2;
+            animation: sunPulse 3s ease-in-out infinite, sunRotate 20s linear infinite;
+        }
+
+        @keyframes sunPulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow:
+                    0 0 20px #ff9800,
+                    0 0 40px #ff9800,
+                    0 0 60px #ff5722;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                box-shadow:
+                    0 0 30px #ff9800,
+                    0 0 50px #ff9800,
+                    0 0 70px #ff5722,
+                    0 0 90px rgba(255, 87, 34, 0.5);
+            }
+        }
+
+        @keyframes sunRotate {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 100px 0;
+            }
+        }
+
+        .planet {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            transform-origin: 50% 50%;
+            animation: orbit linear infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .planet:hover {
+            transform-origin: 50% 50%;
+            filter: brightness(1.5) saturate(1.3);
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .planet::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            border-radius: 50%;
+            background: inherit;
+            filter: blur(4px);
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        .planet:hover::after {
+            opacity: 0.6;
+        }
+
+        /* Planet styles with enhanced colors and effects */
+        .mercury {
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle at 30% 30%, #e6e6e6, #b3b3b3, #808080);
+            box-shadow: 0 0 10px rgba(230, 230, 230, 0.7);
+            animation: orbit linear infinite, planetRotate 5s linear infinite;
+        }
+
+        .venus {
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle at 30% 30%, #ffd699, #ffb347, #cc7000);
+            box-shadow: 0 0 12px rgba(255, 198, 73, 0.7);
+            animation: orbit linear infinite, planetRotate 6s linear infinite;
+        }
+
+        .earth {
+            width: 9px;
+            height: 9px;
+            background: radial-gradient(circle at 30% 30%, #6b93d6, #1e3a8a, #10b981);
+            box-shadow: 0 0 12px rgba(107, 147, 214, 0.8);
+            animation: orbit linear infinite, earthRotate 2s linear infinite;
+        }
+
+        .mars {
+            width: 7px;
+            height: 7px;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000, #800000);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.7);
+            animation: orbit linear infinite, planetRotate 4s linear infinite;
+        }
+
+        .jupiter {
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle at 30% 30%, #ffd699, #d2691e, #8b4513);
+            box-shadow: 0 0 18px rgba(210, 105, 30, 0.8);
+            animation: orbit linear infinite, jupiterRotate 3s linear infinite;
+        }
+
+        @keyframes jupiterRotate {
+            from {
+                background-position: 0px 0px;
+            }
+
+            to {
+                background-position: 48px 0px;
+            }
+        }
+
+        .saturn {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #ffeac2, #fad5a5, #daa520);
+            box-shadow: 0 0 16px rgba(250, 213, 165, 0.7);
+            position: relative;
+            animation: orbit linear infinite, planetRotate 4s linear infinite;
+        }
+
+        @keyframes planetRotate {
+            from {
+                background-position: 0px 0px;
+            }
+
+            to {
+                background-position: 20px 0px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 10px;
+            }
+
+            .solar-system {
+                transform: scale(0.7);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .solar-system {
+                transform: scale(0.5);
+            }
+        }
+
+        .saturn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 35px;
+            height: 35px;
+            border: 2px solid rgba(250, 213, 165, 0.6);
+            border-radius: 50%;
+            z-index: -1;
+            animation: ringPulse 4s infinite alternate;
+        }
+
+        @keyframes ringPulse {
+            from {
+                width: 35px;
+                height: 35px;
+                opacity: 0.6;
+            }
+
+            to {
+                width: 38px;
+                height: 38px;
+                opacity: 0.8;
+            }
+        }
+
+        .uranus {
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(circle at 30% 30%, #a6e6ff, #4fd0e7, #0891b2);
+            box-shadow: 0 0 14px rgba(79, 208, 231, 0.8);
+            animation: orbit linear infinite, planetRotate 7s linear infinite;
+        }
+
+        .neptune {
+            width: 13px;
+            height: 13px;
+            background: radial-gradient(circle at 30% 30%, #6495ed, #4169e1, #191970);
+            box-shadow: 0 0 14px rgba(65, 105, 225, 0.8);
+            animation: orbit linear infinite, planetRotate 8s linear infinite;
+        }
+
+        @keyframes earthRotate {
+            from {
+                background-position: 0px 0px;
+            }
+
+            to {
+                background-position: 20px 0px;
+            }
+        }
+
+        @keyframes orbit {
+            from {
+                transform: rotate(0deg) translate(var(--distance)) rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg) translate(var(--distance)) rotate(360deg);
+            }
+        }
+
+        /* Orbit distances and speeds */
+        .mercury {
+            --distance: 60px;
+            animation-duration: 4s;
+        }
+
+        .venus {
+            --distance: 85px;
+            animation-duration: 7s;
+        }
+
+        .earth {
+            --distance: 110px;
+            animation-duration: 10s;
+        }
+
+        .mars {
+            --distance: 140px;
+            animation-duration: 15s;
+        }
+
+        .jupiter {
+            --distance: 180px;
+            animation-duration: 22s;
+        }
+
+        .saturn {
+            --distance: 220px;
+            animation-duration: 28s;
+        }
+
+        .uranus {
+            --distance: 260px;
+            animation-duration: 35s;
+        }
+
+        .neptune {
+            --distance: 300px;
+            animation-duration: 42s;
+        }
+
+        /* Info Panel Styling */
+        #infoPanel {
+            position: fixed;
+            top: 0;
+            right: -30%;
+            width: 30vw;
+            min-width: 320px;
+            max-width: 500px;
+            height: 100vh;
+            background: #000;
+            color: #fff;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0, 140, 255, 0.3);
+            border-left: 1px solid rgba(100, 200, 255, 0.15);
+            opacity: 0;
+            display: block;
+            transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+        }
+
+        #infoPanel.show {
+            right: 0;
+            opacity: 1;
+        }
+
+        .info-content {
+            padding: 32px 24px 24px 24px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            font-size: 2rem;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            transition: background 0.2s, color 0.2s, transform 0.3s;
+            opacity: 1;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 0, 0, 0.25);
+            color: #ff5555;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        @media (max-width: 900px) {
+            #infoPanel {
+                width: 50vw;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #infoPanel {
+                width: 100vw;
+                right: -100vw;
+                max-width: none;
+                min-width: 0;
+            }
+
+            #infoPanel.show {
+                right: 0;
+            }
+        }
+
+        .solar-system {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .solar-system.shifted {
+            transform: translateX(-15vw);
+        }
+
+        @media (max-width: 900px) {
+            .solar-system.shifted {
+                transform: translateX(-25vw);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .solar-system.shifted {
+                transform: scale(0.8) translateX(-40vw);
+            }
+        }
+
+        /* Scrollbar styling for hidden moons */
+        .hidden-moons::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .hidden-moons::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .hidden-moons::-webkit-scrollbar-thumb {
+            background: rgba(100, 181, 246, 0.5);
+            border-radius: 3px;
+        }
+
+        .hidden-moons::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 181, 246, 0.8);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-item {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .detail-item:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .detail-item:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .detail-item:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .detail-item:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .detail-item:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .detail-item:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .detail-item:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .detail-item:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-outline-light {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .btn-outline-light:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+                bottom: 10px;
+                padding: 8px 10px;
+            }
+
+            .btn-outline-light {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .see-more-moons-btn {
+            background: linear-gradient(90deg, #2196f3 60%, #64b5f6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            padding: 3px 14px;
+            margin-left: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            outline: none;
+            display: inline-block;
+        }
+
+        .see-more-moons-btn:hover,
+        .see-more-moons-btn:focus {
+            background: linear-gradient(90deg, #1565c0 60%, #64b5f6 100%);
+            color: #fff;
+            transform: scale(1.07);
+        }
+
+        .hidden-moons {
+            margin-top: 10px;
+            background: rgba(33, 150, 243, 0.08);
+            border-radius: 8px;
+            padding: 10px 12px 0 12px;
+            color: #b3e5fc;
+            font-size: 0.97rem;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
+            animation: fadeIn 0.3s;
+            position: relative;
+        }
+
+        .moons-list {
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .show-less-moons-btn {
+            background: none;
+            color: #2196f3;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 0 8px 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            transition: color 0.2s;
+            outline: none;
+            margin-top: 0;
+            margin-bottom: 0;
+            display: block;
+        }
+
+        .show-less-moons-btn:hover,
+        .show-less-moons-btn:focus {
+            color: #1565c0;
+            text-decoration: underline;
+        }
+
+        .see-more-moons-link,
+        .show-less-moons-btn {
+            color: #2196f3;
+            background: none;
+            border: none;
+            border-radius: 6px;
+            padding: 2px 0 8px 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            width: auto;
+            transition: color 0.2s;
+            outline: none;
+            margin-left: 8px;
+            margin-top: 0;
+            margin-bottom: 0;
+            display: inline;
+        }
+
+        .see-more-moons-link:hover,
+        .see-more-moons-link:focus,
+        .show-less-moons-btn:hover,
+        .show-less-moons-btn:focus {
+            color: #1565c0;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hamburger-menu">
+        <button class="hamburger-icon">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="menu-items">
+            <a href="home.html">Home</a>
+            <a href="Solarsystem.html">Solar System</a>
+            <a href="planets.html">Planets</a>
+            <a href="missions.html">Missions</a>
+        </div>
+    </div>
+    <div class="starfield" id="starfield"></div>
+    <div class="main-container">
+        <div class="info-panel" id="infoPanel">
+            <button class="close-btn" onclick="hidePanel()">×</button>
+            <div class="info-content"></div>
+        </div>
+
+        <div class="solar-system" id="solarSystem">
+            <div class="sun" data-name="Sun"
+                data-info="The Sun is a yellow dwarf star that contains 99.86% of the Solar System's mass. It's about 4.6 billion years old and powers all life on Earth.">
+            </div>
+
+            <!-- Orbit Lines -->
+            <div class="orbit" style="width: calc(2 * 60px); height: calc(2 * 60px);"></div>
+            <div class="orbit" style="width: calc(2 * 85px); height: calc(2 * 85px);"></div>
+            <div class="orbit" style="width: calc(2 * 110px); height: calc(2 * 110px);"></div>
+            <div class="orbit" style="width: calc(2 * 140px); height: calc(2 * 140px);"></div>
+            <div class="orbit" style="width: calc(2 * 180px); height: calc(2 * 180px);"></div>
+            <div class="orbit" style="width: calc(2 * 220px); height: calc(2 * 220px);"></div>
+            <div class="orbit" style="width: calc(2 * 260px); height: calc(2 * 260px);"></div>
+            <div class="orbit" style="width: calc(2 * 300px); height: calc(2 * 300px);"></div>
+
+            <!-- Planets -->
+            <div class="planet mercury" data-name="Mercury"
+                data-info="Mercury is the smallest planet and closest to the Sun. It has extreme temperature variations and no atmosphere.">
+            </div>
+            <div class="planet venus" data-name="Venus"
+                data-info="Venus is the hottest planet with a thick, toxic atmosphere. It rotates backwards compared to most planets.">
+            </div>
+            <div class="planet earth" data-name="Earth"
+                data-info="Earth is the only known planet with life. It has a perfect distance from the Sun and a protective atmosphere.">
+            </div>
+            <div class="planet mars" data-name="Mars"
+                data-info="Mars is known as the Red Planet due to iron oxide on its surface. It has the largest volcano in the Solar System.">
+            </div>
+            <div class="planet jupiter" data-name="Jupiter"
+                data-info="Jupiter is the largest planet with a Great Red Spot storm. It has over 80 moons and acts as a cosmic shield for inner planets.">
+            </div>
+            <div class="planet saturn" data-name="Saturn"
+                data-info="Saturn is famous for its beautiful ring system. It's less dense than water and has over 80 moons.">
+            </div>
+            <div class="planet uranus" data-name="Uranus"
+                data-info="Uranus rotates on its side and has a unique blue-green color due to methane in its atmosphere.">
+            </div>
+            <div class="planet neptune" data-name="Neptune"
+                data-info="Neptune is the windiest planet with speeds up to 2,100 km/h. It's the furthest planet from the Sun.">
+            </div>
+        </div>
+        <div class="controls">
+            <div class="btn-group">
+                <button class="btn btn-outline-light" onclick="toggleAnimation()">⏸️ Pause</button>
+                <button class="btn btn-outline-light" onclick="changeSpeed('slow')">🐌 Slow</button>
+                <button class="btn btn-outline-light" onclick="changeSpeed('normal')">▶️ Normal</button>
+                <button class="btn btn-outline-light" onclick="changeSpeed('fast')">⚡ Fast</button>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Create starfield
+            function createStarfield() {
+                const starfield = document.getElementById('starfield');
+                const numStars = 400; // Increased from 200
+
+                for (let i = 0; i < numStars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+
+                    // Random size with improved distribution
+                    const sizes = ['small', 'medium', 'large'];
+                    const weights = [0.75, 0.2, 0.05]; // 75% small, 20% medium, 5% large
+                    let random = Math.random();
+                    let sizeClass = sizes[0];
+
+                    if (random > weights[0]) {
+                        sizeClass = random > weights[0] + weights[1] ? sizes[2] : sizes[1];
+                    }
+
+                    star.classList.add(sizeClass);
+
+                    // Random position with z-index variation for parallax effect
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.zIndex = Math.floor(Math.random() * 3) - 1;
+
+                    // Add transform for 3D effect
+                    const translateZ = Math.random() * 300;
+                    star.style.transform = `translateZ(${translateZ}px)`;
+
+                    // Random animation delay and duration
+                    star.style.animationDelay = Math.random() * 3 + 's';
+                    star.style.animationDuration = (Math.random() * 4 + 1) + 's';
+
+                    starfield.appendChild(star);
+                }
+            }
+
+            // Planet information system
+            const planetData = {
+                Sun: {
+                    video: 'assets/Sun 3D Model.mp4',
+                    info: "The Sun is a yellow dwarf star that contains 99.86% of the Solar System's mass. It's about 4.6 billion years old and powers all life on Earth.",
+                    diameter: '1,392,700 km',
+                    surfaceTemp: '5,500°C',
+                    mass: '1.989 × 10^30 kg',
+                    type: 'Yellow Dwarf Star',
+                    moons: [],
+                    distanceFromSun: '0 km (center of the solar system)',
+                    lengthOfDay: '25-35 Earth days (varies by latitude)',
+                    radius: '696,340 km',
+                    gravity: '274 m/s² (27.94 g)',
+                    surfaceArea: '6.09 × 10^12 km²',
+                },
+                Mercury: {
+                    video: 'assets/Mercury 3D Model.mp4',
+                    info: "Mercury is the smallest planet and closest to the Sun. It has extreme temperature variations and no atmosphere.",
+                    diameter: '4,879 km',
+                    orbitalPeriod: '88 Earth days',
+                    surfaceTemp: '-180°C to 430°C',
+                    type: 'Terrestrial Planet',
+                    moons: [],
+                    distanceFromSun: '57.9 million km',
+                    lengthOfDay: '58.6 Earth days',
+                    radius: '2,439.7 km',
+                    gravity: '3.7 m/s² (0.38 g)',
+                    surfaceArea: '7.48 × 10^7 km²',
+                    mass: '3.30 × 10^23 kg',
+                },
+                Venus: {
+                    video: 'assets/Venus 3D Model.mp4',
+                    info: "Venus is the hottest planet with a thick, toxic atmosphere. It rotates backwards compared to most planets.",
+                    diameter: '12,104 km',
+                    orbitalPeriod: '225 Earth days',
+                    surfaceTemp: '462°C',
+                    type: 'Terrestrial Planet',
+                    moons: [],
+                    distanceFromSun: '108.2 million km',
+                    lengthOfDay: '243 Earth days',
+                    radius: '6,051.8 km',
+                    gravity: '8.87 m/s² (0.9 g)',
+                    surfaceArea: '4.6 × 10^8 km²',
+                    mass: '4.87 × 10^24 kg',
+                },
+                Earth: {
+                    video: 'assets/Earth 3D Model.mp4',
+                    info: "Earth is the only known planet with life. It has a perfect distance from the Sun and a protective atmosphere.",
+                    diameter: '12,742 km',
+                    orbitalPeriod: '365.25 days',
+                    surfaceTemp: '15°C (average)',
+                    type: 'Terrestrial Planet',
+                    moons: ['Moon'],
+                    distanceFromSun: '149.6 million km',
+                    lengthOfDay: '24 hours',
+                    radius: '6,371 km',
+                    gravity: '9.8 m/s² (1 g)',
+                    surfaceArea: '5.1 × 10^8 km²',
+                    mass: '5.97 × 10^24 kg',
+                },
+                Mars: {
+                    video: 'assets/Mars 3D Model.mp4',
+                    info: "Mars is known as the Red Planet due to iron oxide on its surface. It has the largest volcano in the Solar System.",
+                    diameter: '6,779 km',
+                    orbitalPeriod: '687 Earth days',
+                    surfaceTemp: '-63°C (average)',
+                    type: 'Terrestrial Planet',
+                    moons: ['Phobos', 'Deimos'],
+                    distanceFromSun: '227.9 million km',
+                    lengthOfDay: '24.6 hours',
+                    radius: '3,389.5 km',
+                    gravity: '3.72 m/s² (0.38 g)',
+                    surfaceArea: '1.45 × 10^8 km²',
+                    mass: '6.42 × 10^23 kg',
+                },
+                Jupiter: {
+                    video: 'assets/Jupiter 3D Model.mp4',
+                    info: "Jupiter is the largest planet with a Great Red Spot storm. It has over 80 moons and acts as a cosmic shield for inner planets.",
+                    diameter: '139,820 km',
+                    orbitalPeriod: '11.9 Earth years',
+                    surfaceTemp: '-110°C (cloud top)',
+                    type: 'Gas Giant',
+                    moons: ['Io', 'Europa', 'Ganymede', 'Callisto', 'Amalthea', 'Himalia', 'Elara', 'Pasiphae', 'Sinope', 'Lysithea', 'Carme', 'Ananke', 'Leda', 'Thebe', 'Adrastea', 'Metis', 'Callirrhoe', 'Themisto', 'Megaclite', 'Taygete', 'Chaldene', 'Harpalyke', 'Kalyke', 'Iocaste', 'Eirene', 'Isonoe', 'Praxidike', 'Autonoe', 'Thyone', 'Hermippe', 'Aitne', 'Eurydome', 'Euanthe', 'Euporie', 'Orthosie', 'Sponde', 'Kale', 'Pasithee', 'Hegemone', 'Mneme', 'Aoede', 'Thelxinoe', 'Arche', 'Kallichore', 'Helike', 'Carpo', 'Eukelade', 'Cyllene', 'Kore', 'Herse', 'S/2010 J 1', 'S/2010 J 2', 'Dia', 'S/2016 J 1', 'S/2016 J 1', 'S/2011 J 2', 'Eirene', 'Philophrosyne', 'S/2017 J 1', 'Eupheme', 'S/2003 J 16', 'S/2003 J 2', 'S/2003 J 4', 'S/2003 J 9', 'S/2003 J 10', 'S/2003 J 12', 'S/2003 J 15', 'S/2003 J 17', 'S/2003 J 19', 'S/2003 J 23', 'S/2011 J 1'],
+                    distanceFromSun: '778.5 million km',
+                    lengthOfDay: '9.93 hours',
+                    radius: '69,911 km',
+                    gravity: '24.79 m/s² (2.53 g)',
+                    surfaceArea: '6.14 × 10^10 km²',
+                    mass: '1.898 × 10^27 kg',
+                },
+                Saturn: {
+                    video: 'assets/Saturn 3D Model.mp4',
+                    info: "Saturn is famous for its beautiful ring system. It's less dense than water and has over 80 moons.",
+                    diameter: '116,460 km',
+                    orbitalPeriod: '29.5 Earth years',
+                    surfaceTemp: '-140°C (cloud top)',
+                    type: 'Gas Giant',
+                    moons: ['Titan', 'Rhea', 'Iapetus', 'Dione', 'Tethys', 'Enceladus', 'Mimas', 'Hyperion', 'Phoebe', 'Janus', 'Epimetheus', 'Prometheus', 'Pandora', 'Helene', 'Atlas', 'Pan', 'Ymir', 'Paaliaq', 'Tarvos', 'Ijiraq', 'Suttungr', 'Kiviuq', 'Mundilfari', 'Albiorix', 'Skathi', 'Erriapus', 'Siarnaq', 'Thrymr', 'Narvi', 'Methone', 'Pallene', 'Polydeuces', 'Daphnis', 'Aegir', 'Bebhionn', 'Bergelmir', 'Bestla', 'Farbauti', 'Fenrir', 'Fornjot', 'Hati', 'Hyrrokkin', 'Kari', 'Loge', 'Skoll', 'Surtur', 'Anthe', 'Jarnsaxa', 'Greip', 'Tarqeq', 'Aegaeon', 'S/2004 S 7', 'S/2004 S 12', 'S/2004 S 13', 'S/2004 S 17', 'S/2006 S 1', 'S/2006 S 3', 'S/2007 S 2', 'S/2007 S 3', 'S/2009 S 1'],
+                    distanceFromSun: '1.43 billion km',
+                    lengthOfDay: '10.7 hours',
+                    radius: '58,232 km',
+                    gravity: '10.44 m/s² (1.07 g)',
+                    surfaceArea: '4.27 × 10^10 km²',
+                    mass: '5.68 × 10^26 kg',
+                },
+                Uranus: {
+                    video: 'assets/Uranus 3D Model.mp4',
+                    info: "Uranus rotates on its side and has a unique blue-green color due to methane in its atmosphere.",
+                    diameter: '50,724 km',
+                    orbitalPeriod: '84 Earth years',
+                    surfaceTemp: '-195°C (cloud top)',
+                    type: 'Ice Giant',
+                    moons: ['Titania', 'Oberon', 'Umbriel', 'Ariel', 'Miranda', 'Puck', 'Sycorax', 'Portia', 'Juliet', 'Belinda', 'Cressida', 'Rosalind', 'Desdemona', 'Bianca', 'Ophelia', 'Cordelia', 'Caliban', 'Stephano', 'Trinculo', 'Francisco', 'Margaret', 'Ferdinand', 'Perdita', 'Mab', 'Cupid', 'Setebos', 'Prospero'],
+                    distanceFromSun: '2.87 billion km',
+                    lengthOfDay: '17.2 hours',
+                    radius: '25,362 km',
+                    gravity: '8.69 m/s² (0.89 g)',
+                    surfaceArea: '8.1 × 10^9 km²',
+                    mass: '8.68 × 10^25 kg',
+                },
+                Neptune: {
+                    video: 'assets/Neptune 3D Model.mp4',
+                    info: "Neptune is the windiest planet with speeds up to 2,100 km/h. It's the furthest planet from the Sun.",
+                    diameter: '49,244 km',
+                    orbitalPeriod: '165 Earth years',
+                    surfaceTemp: '-200°C (cloud top)',
+                    type: 'Ice Giant',
+                    moons: ['Triton', 'Proteus', 'Nereid', 'Larissa', 'Galatea', 'Despina', 'Thalassa', 'Naiad', 'Halimede', 'Neso', 'Sao', 'Laomedeia', 'Psamathe', 'S/2004 N 1'],
+                    distanceFromSun: '4.5 billion km',
+                    lengthOfDay: '16.1 hours',
+                    radius: '24,622 km',
+                    gravity: '11.15 m/s² (1.14 g)',
+                    surfaceArea: '7.6 × 10^9 km²',
+                    mass: '1.02 × 10^26 kg',
+                }
+            };
+
+            const infoPanel = document.getElementById('infoPanel');
+            const planetName = document.getElementById('planetName');
+            const planetInfo = document.getElementById('planetInfo');
+            const planetDetails = document.getElementById('planetDetails');
+            const solarSystem = document.getElementById('solarSystem');
+
+            // Collect planet data
+            document.querySelectorAll('[data-name]').forEach(element => {
+                const name = element.getAttribute('data-name');
+                element.addEventListener('click', () => showPlanetInfo(name));
+            });
+
+            function showPlanetInfo(planet) {
+                const data = planetData[planet];
+                if (!data) return;
+                let moonsList = '';
+                if (data.moons && data.moons.length > 0) {
+                    if (data.moons.length <= 5) {
+                        moonsList = data.moons.join(', ');
+                    } else {
+                        const visibleMoons = data.moons.slice(0, 5).join(', ');
+                        const hiddenMoons = data.moons.slice(5).join(', ');
+                        moonsList = `${visibleMoons} <span class="see-more-moons-link" tabindex="0" role="button">See ${data.moons.length - 5} more</span>
+        <div class="hidden-moons" style="display:none;">
+            <div class="moons-list">${hiddenMoons}</div>
+            <span class="show-less-moons-btn" tabindex="0" role="button">Show less</span>
+        </div>`;
+                    }
+                } else {
+                    moonsList = 'None';
+                }
+                document.querySelector('#infoPanel .info-content').innerHTML = `
+        <div class="info-header">
+            <h2 style="font-size:2.2rem;background:linear-gradient(to right,#64b5f6,#2196f3);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 10px rgba(33,150,243,0.5);margin:0 0 18px 0;">${planet}</h2>
+        </div>
+        <div class="planet-video" style="width:100%;height:220px;border-radius:10px;overflow:hidden;margin-bottom:20px;box-shadow:0 5px 15px rgba(0,0,0,0.5);">
+            <video autoplay loop muted style="width:100%;height:100%;object-fit:cover;background:#111;">
+                <source src="${data.video}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="planet-details">
+            <p class="planet-description" style="color:#e0e0e0;text-shadow:0 0 5px #000;">${data.info}</p>
+            <div class="planet-stats">
+                <div class="stat-item"><span class="stat-label">Moons:</span><span class="stat-value">${moonsList}</span></div>
+                <div class="stat-item"><span class="stat-label">Distance from Sun:</span><span class="stat-value">${data.distanceFromSun}</span></div>
+                <div class="stat-item"><span class="stat-label">Length of day:</span><span class="stat-value">${data.lengthOfDay}</span></div>
+                <div class="stat-item"><span class="stat-label">Radius:</span><span class="stat-value">${data.radius}</span></div>
+                <div class="stat-item"><span class="stat-label">Gravity:</span><span class="stat-value">${data.gravity}</span></div>
+                <div class="stat-item"><span class="stat-label">Surface area:</span><span class="stat-value">${data.surfaceArea}</span></div>
+                <div class="stat-item"><span class="stat-label">Mass:</span><span class="stat-value">${data.mass}</span></div>
+                <div class="stat-item"><span class="stat-label">Diameter:</span><span class="stat-value">${data.diameter}</span></div>
+                <div class="stat-item"><span class="stat-label">Type:</span><span class="stat-value">${data.type}</span></div>
+                ${data.orbitalPeriod ? `<div class="stat-item"><span class="stat-label">Orbital Period:</span><span class="stat-value">${data.orbitalPeriod}</span></div>` : ''}
+                <div class="stat-item"><span class="stat-label">Surface Temperature:</span><span class="stat-value">${data.surfaceTemp}</span></div>
+            </div>
+        </div>
+    `;
+                // Improved see more/less event binding for text links
+                const seeMoreLink = document.querySelector('#infoPanel .see-more-moons-link');
+                const hiddenMoonsDiv = document.querySelector('#infoPanel .hidden-moons');
+                const showLessLink = document.querySelector('#infoPanel .show-less-moons-btn');
+                if (seeMoreLink && hiddenMoonsDiv && showLessLink) {
+                    seeMoreLink.addEventListener('click', function () {
+                        hiddenMoonsDiv.style.display = 'block';
+                        seeMoreLink.style.display = 'none';
+                    });
+                    seeMoreLink.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.click();
+                        }
+                    });
+                    showLessLink.addEventListener('click', function () {
+                        hiddenMoonsDiv.style.display = 'none';
+                        seeMoreLink.style.display = 'inline';
+                    });
+                    showLessLink.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.click();
+                        }
+                    });
+                }
+                infoPanel.style.display = 'block';
+                setTimeout(() => {
+                    infoPanel.classList.add('show');
+                }, 10);
+                solarSystem.classList.add('shifted');
+            }
+
+            function hidePanel() {
+                const infoPanel = document.getElementById('infoPanel');
+                infoPanel.classList.remove('show');
+                solarSystem.classList.remove('shifted');
+
+                // Hide panel after animation completes
+                setTimeout(() => {
+                    infoPanel.style.display = 'none';
+                    document.querySelector('#infoPanel .info-content').innerHTML = '';
+                }, 400);
+            }
+
+            // Hide info panel when clicking elsewhere
+            document.addEventListener('click', (e) => {
+                const clickedElement = e.target;
+                // Check if clicked on close button or its parent
+                if (clickedElement.classList.contains('close-btn') || clickedElement.closest('.close-btn')) {
+                    hidePanel();
+                    return;
+                }
+                // Hide panel when clicking outside unless clicking on a planet
+                if (!clickedElement.hasAttribute('data-name') && !infoPanel.contains(clickedElement)) {
+                    hidePanel();
+                }
+            });
+
+            // Animation controls
+            let isPaused = false;
+            let currentSpeed = 1;
+
+            function toggleAnimation() {
+                const planets = document.querySelectorAll('.planet');
+                const btn = event.target;
+
+                if (isPaused) {
+                    planets.forEach(planet => {
+                        planet.style.animationPlayState = 'running';
+                    });
+                    btn.textContent = '⏸️ Pause';
+                    isPaused = false;
+                } else {
+                    planets.forEach(planet => {
+                        planet.style.animationPlayState = 'paused';
+                    });
+                    btn.textContent = '▶️ Play';
+                    isPaused = true;
+                }
+            }
+
+            function changeSpeed(speed) {
+                const planets = document.querySelectorAll('.planet');
+                let multiplier;
+
+                switch (speed) {
+                    case 'slow':
+                        multiplier = 2;
+                        break;
+                    case 'normal':
+                        multiplier = 1;
+                        break;
+                    case 'fast':
+                        multiplier = 0.3;
+                        break;
+                }
+
+                planets.forEach(planet => {
+                    const originalDuration = parseFloat(getComputedStyle(planet).animationDuration);
+                    const baseDuration = originalDuration / currentSpeed;
+                    planet.style.animationDuration = (baseDuration * multiplier) + 's';
+                });
+
+                currentSpeed = multiplier;
+            }
+
+            // Shooting stars effect
+            function createShootingStar() {
+                const star = document.createElement('div');
+                star.style.position = 'fixed';
+                star.style.width = '3px';
+                star.style.height = '3px';
+                star.style.background = 'white';
+                star.style.borderRadius = '50%';
+                star.style.boxShadow = '0 0 8px 4px rgba(255,255,255,0.8), 0 0 20px 8px rgba(255,255,255,0.3)';
+                star.style.left = Math.random() * window.innerWidth + 'px';
+                star.style.top = '-10px';
+                star.style.zIndex = '5';
+
+                // Add trail effect
+                const trail = document.createElement('div');
+                trail.style.position = 'fixed';
+                trail.style.width = '1px';
+                trail.style.height = '20px';
+                trail.style.background = 'linear-gradient(to top, transparent, rgba(255,255,255,0.8))';
+                trail.style.left = (parseInt(star.style.left) + 1) + 'px';
+                trail.style.top = '-10px';
+                trail.style.zIndex = '4';
+                trail.style.transformOrigin = 'top';
+
+                document.body.appendChild(star);
+                document.body.appendChild(trail);
+
+                const duration = Math.random() * 2000 + 800;
+                const angle = Math.random() * 30 - 15; // Random angle between -15 and 15 degrees
+                const distance = Math.max(window.innerWidth, window.innerHeight) * 1.5;
+                const endX = parseInt(star.style.left) + distance * Math.sin(angle * Math.PI / 180);
+                const endY = window.innerHeight + 10;
+
+                // Animate star
+                star.animate([
+                    { transform: `translate(0, 0)`, opacity: 0 },
+                    { transform: `translate(${endX - parseInt(star.style.left)}px, ${endY}px)`, opacity: 1, offset: 0.8 },
+                    { transform: `translate(${endX - parseInt(star.style.left)}px, ${endY}px)`, opacity: 0 }
+                ], {
+                    duration: duration,
+                    easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+                }).onfinish = () => {
+                    star.remove();
+                };
+
+                // Animate trail
+                trail.animate([
+                    { transform: `translate(0, 0) rotate(${angle}deg) scaleY(1)`, opacity: 0 },
+                    { transform: `translate(${endX - parseInt(trail.style.left)}px, ${endY}px) rotate(${angle}deg) scaleY(${distance / 20})`, opacity: 0.8, offset: 0.8 },
+                    { transform: `translate(${endX - parseInt(trail.style.left)}px, ${endY}px) rotate(${angle}deg) scaleY(${distance / 20})`, opacity: 0 }
+                ], {
+                    duration: duration,
+                    easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+                }).onfinish = () => {
+                    trail.remove();
+                };
+            }
+
+            // Create shooting stars more frequently
+            setInterval(createShootingStar, Math.random() * 5000 + 3000);
+
+            // Initialize
+            createStarfield();
+
+            // Add some sparkle effects to planets periodically
+            function addSparkle(planet) {
+                const sparkle = document.createElement('div');
+                sparkle.style.position = 'absolute';
+                sparkle.style.width = '3px';
+                sparkle.style.height = '3px';
+                sparkle.style.background = 'white';
+                sparkle.style.borderRadius = '50%';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.transform = 'translate(-50%, -50%)';
+                sparkle.style.pointerEvents = 'none';
+                sparkle.style.zIndex = '10';
+                sparkle.style.boxShadow = '0 0 8px 2px rgba(255,255,255,0.8)';
+
+                planet.appendChild(sparkle);
+
+                sparkle.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 1 },
+                    { transform: 'translate(-50%, -50%) scale(2)', opacity: 0.8, offset: 0.5 },
+                    { transform: 'translate(-50%, -50%) scale(3)', opacity: 0 }
+                ], {
+                    duration: 1200,
+                    easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+                }).onfinish = () => {
+                    sparkle.remove();
+                };
+            }
+
+            // Random sparkles on planets
+            setInterval(() => {
+                const planets = document.querySelectorAll('.planet');
+                const randomPlanet = planets[Math.floor(Math.random() * planets.length)];
+                if (Math.random() < 0.5) { // 50% chance (increased from 30%)
+                    addSparkle(randomPlanet);
+                }
+            }, 1500); // More frequent sparkles (reduced from 2000ms)
+        </script>
+        <script>
+            // Hamburger menu functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                const hamburgerBtn = document.querySelector('.hamburger-icon');
+                const menuItems = document.querySelector('.menu-items');
+                let isMenuOpen = false;
+
+                function toggleMenu(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isMenuOpen = !isMenuOpen;
+                    menuItems.classList.toggle('active');
+                }
+
+                function closeMenu() {
+                    if (isMenuOpen) {
+                        isMenuOpen = false;
+                        menuItems.classList.remove('active');
+                    }
+                }
+
+                // Toggle menu when clicking hamburger
+                hamburgerBtn.addEventListener('click', toggleMenu);
+
+                // Close menu when clicking a link
+                menuItems.addEventListener('click', function (event) {
+                    if (event.target.tagName === 'A') {
+                        closeMenu();
+                    }
+                    event.stopPropagation();
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function (event) {
+                    const isClickInside = menuItems.contains(event.target) || hamburgerBtn.contains(event.target);
+                    if (!isClickInside) {
+                        closeMenu();
+                    }
+                });
+
+                // Close menu when pressing Escape key
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape') {
+                        closeMenu();
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>

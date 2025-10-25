@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Missions - Solar System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #00eaff;
+            --secondary-color: #7b2bf9;
+            --accent-color: #ff4d4d;
+            --text-color: #ffffff;
+            --text-secondary: #e6e6e6;
+            --bg-dark: #000000;
+            --bg-gradient: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(0, 234, 255, 0.2);
+            --card-glow: rgba(0, 234, 255, 0.3);
+            --transition-speed: 0.3s;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 76px;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            padding-top: 76px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIwLjUiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4yKSIvPjwvc3ZnPg==');
+            opacity: 0.2;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(0, 234, 255, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Scroll Progress Indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        /* Enhanced Navigation */
+        .navbar {
+            background: rgba(0, 0, 0, 0.9) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 0 0.5rem;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 234, 255, 0.1), rgba(123, 43, 249, 0.1));
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-link:hover::before {
+            left: 0;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            border-color: rgba(0, 234, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(0, 234, 255, 0.2), rgba(123, 43, 249, 0.2));
+            box-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
+        }
+
+        .nav-link i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Mission Navigation Pills */
+        .mission-nav {
+            background: rgba(13, 17, 23, 0.7);
+            border-radius: 50px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mission-nav .nav-link {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .mission-nav .nav-link:hover,
+        .mission-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .mission-nav .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: radial-gradient(ellipse at top, #1B2735 0%, #090A0F 100%);
+            padding: 6rem 2rem;
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIwLjUiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4yKSIvPjwvc3ZnPg==');
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .page-header h1 {
+            color: var(--primary-color);
+            font-size: 3.5em;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 234, 255, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Mission Cards */
+        .mission-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(10px);
+            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+            position: relative;
+        }
+
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color), var(--primary-color));
+            z-index: -1;
+            border-radius: 17px;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease;
+            background-size: 400% 400%;
+            animation: gradientBorder 3s ease infinite;
+        }
+
+        @keyframes gradientBorder {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .mission-card:hover::before {
+            opacity: 1;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0, 234, 255, 0.2);
+        }
+
+        .mission-card .row {
+            align-items: center;
+        }
+
+        .mission-img-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            border-radius: 15px 0 0 15px;
+            position: relative;
+        }
+
+        .mission-img-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 234, 255, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+            pointer-events: none;
+        }
+
+        .mission-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .mission-card:hover .mission-img-container img {
+            transform: scale(1.05);
+        }
+
+        .mission-content {
+            padding: 2.5rem;
+        }
+
+        .mission-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .mission-content h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        .mission-card:hover .mission-content h3::after {
+            width: 100%;
+        }
+
+        .mission-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .mission-details {
+            background: rgba(0, 234, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .mission-card:hover .mission-details {
+            background: rgba(0, 234, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .mission-details p {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .mission-date {
+            display: inline-block;
+            background: linear-gradient(90deg, rgba(0, 234, 255, 0.2), rgba(123, 43, 249, 0.2));
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 234, 255, 0.3);
+        }
+
+        .mission-date i {
+            margin-right: 5px;
+        }
+
+        /* Timeline Styles */
+        .timeline-section {
+            background: radial-gradient(ellipse at center, #1B2735 0%, #090A0F 100%);
+            color: var(--text-color);
+            padding: 80px 0;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            min-height: 600px;
+            position: relative;
+            border-top: 2px solid var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 4rem;
+            overflow: hidden;
+        }
+
+        .timeline-section::before,
+        .timeline-section::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent 0%, var(--primary-color) 20%, var(--primary-color) 80%, transparent 100%);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .timeline-section::before {
+            top: 10px;
+        }
+
+        .timeline-section::after {
+            bottom: 10px;
+        }
+
+        .timeline-section h2 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 234, 255, 0.3);
+        }
+
+        .timeline-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 120px 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-dark);
+            margin: 0 auto;
+            max-width: 100%;
+            position: relative;
+        }
+
+        .timeline-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .timeline-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .timeline-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+            box-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .timeline {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: max-content;
+            padding: 0 100px;
+            min-height: 400px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: translateY(-50%);
+            box-shadow: 0 0 10px rgba(0, 234, 255, 0.5);
+        }
+
+        .timeline-item {
+            position: relative;
+            width: 200px;
+            margin: 0 40px;
+            flex-shrink: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            box-shadow: 0 0 15px var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            transform: translate(-50%, -50%) scale(1.3);
+            background: var(--secondary-color);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            background: var(--primary-color);
+            box-shadow: 0 0 8px var(--primary-color);
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::after {
+            background: var(--secondary-color);
+            box-shadow: 0 0 8px var(--secondary-color);
+        }
+
+        .timeline-item.up::after {
+            top: 0;
+            bottom: 50%;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item.down::after {
+            top: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item .content {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 234, 255, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.15);
+            position: absolute;
+            white-space: normal;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .timeline-item:hover .content {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0, 234, 255, 0.25);
+            border-color: rgba(0, 234, 255, 0.6);
+        }
+
+        .timeline-item.up .content {
+            bottom: 40px;
+            transform-origin: bottom center;
+        }
+
+        .timeline-item.down .content {
+            top: 40px;
+            transform-origin: top center;
+        }
+
+        .timeline-item .content h3 {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .timeline-item .content p {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .timeline-item .content .date {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .mission-img-container {
+                height: 250px;
+                border-radius: 15px 15px 0 0;
+            }
+
+            .mission-content {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 2.8em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 3rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2.2em;
+            }
+
+            .page-header p {
+                font-size: 1rem;
+            }
+
+            .mission-content h3 {
+                font-size: 1.6rem;
+            }
+
+            .mission-content p {
+                font-size: 1rem;
+            }
+
+            .timeline-item .content {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .mission-img-container {
+                height: 200px;
+            }
+
+            .mission-content {
+                padding: 1.2rem;
+            }
+
+            .mission-content h3 {
+                font-size: 1.4rem;
+            }
+
+            .timeline-item .content {
+                width: 180px;
+                padding: 15px;
+            }
+
+            .timeline-item .content h3 {
+                font-size: 1rem;
+            }
+        }
+
+        .timeline-item h3 {
+            margin: 0;
+            color: #00eaff;
+            font-size: 1em;
+        }
+
+        .timeline-item p {
+            font-size: 0.85em;
+            color: #bbb;
+            margin: 8px 0;
+        }
+
+        .timeline-item .date {
+            display: block;
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .mission-card img {
+                border-radius: 15px 15px 0 0;
+                height: 200px;
+            }
+
+            .mission-content {
+                padding: 1.5rem;
+            }
+
+            .mission-content h3 {
+                font-size: 1.5rem;
+            }
+
+            .mission-content p {
+                font-size: 1rem;
+            }
+
+            .timeline-item {
+                width: 160px;
+                margin: 0 20px;
+            }
+
+            .timeline-item .content {
+                width: 180px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-progress"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="home.html">
+                <i class="fas fa-rocket me-2"></i>Solar System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="planets.html"><i class="fas fa-globe me-1"></i>Planets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="missions.html"><i
+                                class="fas fa-satellite me-1"></i>Missions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="solarsystem.html"><i class="fas fa-sun me-1"></i>Solar System</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="page-header">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4">Space Exploration Missions</h1>
+            <p class="lead mb-5">Discover the most significant space missions that have shaped our understanding of the
+                cosmos. From the first satellite to modern Mars rovers, explore humanity's greatest adventures beyond
+                Earth.</p>
+            <div class="nav nav-pills justify-content-center mb-5 mission-nav">
+                <a class="nav-link mx-2 fade-in" href="#sputnik"><i class="fas fa-satellite"></i> Sputnik 1</a>
+                <a class="nav-link mx-2 fade-in" href="#vostok"><i class="fas fa-user-astronaut"></i> Vostok 1</a>
+                <a class="nav-link mx-2 fade-in" href="#mercury"><i class="fas fa-space-shuttle"></i> Mercury</a>
+                <a class="nav-link mx-2 fade-in" href="#vostok6"><i class="fas fa-female"></i> Vostok 6</a>
+                <a class="nav-link mx-2 fade-in" href="#apollo8"><i class="fas fa-moon"></i> Apollo 8</a>
+                <a class="nav-link mx-2 fade-in" href="#apollo11"><i class="fas fa-flag"></i> Apollo 11</a>
+                <a class="nav-link mx-2 fade-in" href="#salyut"><i class="fas fa-satellite"></i> Salyut 1</a>
+                <a class="nav-link mx-2 fade-in" href="#apollo-soyuz"><i class="fas fa-handshake"></i> Apollo-Soyuz</a>
+                <a class="nav-link mx-2 fade-in" href="#columbia"><i class="fas fa-shuttle-van"></i> Columbia</a>
+                <a class="nav-link mx-2 fade-in" href="#mir"><i class="fas fa-space-shuttle"></i> Mir</a>
+                <a class="nav-link mx-2 fade-in" href="#hubble"><i class="fas fa-telescope"></i> Hubble</a>
+                <a class="nav-link mx-2 fade-in" href="#iss"><i class="fas fa-satellite"></i> ISS</a>
+                <a class="nav-link mx-2 fade-in" href="#shenzhou"><i class="fas fa-user-astronaut"></i> Shenzhou 5</a>
+                <a class="nav-link mx-2 fade-in" href="#spacex"><i class="fas fa-rocket"></i> SpaceX</a>
+                <a class="nav-link mx-2 fade-in" href="#artemis"><i class="fas fa-moon"></i> Artemis I</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Timeline Section -->
+    <section class="timeline-section">
+        <h2 class="text-center fade-in">All Crucial Missions at a Glance <i class="fas fa-rocket"></i></h2>
+        <div class="timeline-container">
+            <div class="timeline">
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Sputnik 1</h3>
+                        <p>The first artificial satellite launched into orbit, marking the beginning of the Space Age.
+                        </p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Oct 4, 1957</span>
+                    </div>
+                </div>
+                <div class="timeline-item down fade-in">
+                    <div class="content">
+                        <h3>Vostok 1</h3>
+                        <p>Yuri Gagarin became the first human in space and to orbit Earth.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Apr 12, 1961</span>
+                    </div>
+                </div>
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Mercury-Redstone 3</h3>
+                        <p>Alan Shepard became the first American in space.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> May 5, 1961</span>
+                    </div>
+                </div>
+                <div class="timeline-item down fade-in">
+                    <div class="content">
+                        <h3>Vostok 6</h3>
+                        <p>Valentina Tereshkova became the first woman to fly in space.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Jun 16, 1963</span>
+                    </div>
+                </div>
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Apollo 8</h3>
+                        <p>First crewed spacecraft to orbit the Moon.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Dec 21, 1968</span>
+                    </div>
+                </div>
+                <div class="timeline-item down fade-in">
+                    <div class="content">
+                        <h3>Apollo 11</h3>
+                        <p>Neil Armstrong and Buzz Aldrin became the first humans to walk on the Moon.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Jul 20, 1969</span>
+                    </div>
+                </div>
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Salyut 1</h3>
+                        <p>The world's first space station launched into Earth orbit.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Apr 19, 1971</span>
+                    </div>
+                </div>
+                <div class="timeline-item down fade-in">
+                    <div class="content">
+                        <h3>Apollo–Soyuz Test Project</h3>
+                        <p>First international human spaceflight mission, symbolizing US–Soviet cooperation.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Jul 15, 1975</span>
+                    </div>
+                </div>
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Space Shuttle Columbia</h3>
+                        <p>First reusable spacecraft launched by NASA, beginning the Space Shuttle era.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Apr 12, 1981</span>
+                    </div>
+                </div>
+                <div class="timeline-item down fade-in">
+                    <div class="content">
+                        <h3>Mir Space Station</h3>
+                        <p>Longest continuously inhabited space station before the ISS.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Feb 20, 1986</span>
+                    </div>
+                </div>
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Hubble Space Telescope</h3>
+                        <p>Launched to capture deep-space images, revolutionizing astronomy.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Apr 24, 1990</span>
+                    </div>
+                </div>
+                <div class="timeline-item down fade-in">
+                    <div class="content">
+                        <h3>International Space Station</h3>
+                        <p>Joint effort by many nations; continuously inhabited since 2000.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Nov 20, 1998</span>
+                    </div>
+                </div>
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Shenzhou 5</h3>
+                        <p>Yang Liwei became the first Chinese astronaut in space.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Oct 15, 2003</span>
+                    </div>
+                </div>
+                <div class="timeline-item down fade-in">
+                    <div class="content">
+                        <h3>SpaceX Falcon 9 + Dragon</h3>
+                        <p>First private company to send astronauts to the ISS.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> May 30, 2020</span>
+                    </div>
+                </div>
+                <div class="timeline-item up fade-in">
+                    <div class="content">
+                        <h3>Artemis I</h3>
+                        <p>Uncrewed test flight around the Moon — start of NASA's return-to-the-Moon program.</p>
+                        <span class="date"><i class="fas fa-calendar-alt"></i> Nov 16, 2022</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Mission Cards -->
+        <div class="mission-card fade-in" id="sputnik">
+            <div class="row g-0">
+                <div class="col-md-4 mission-img-container">
+                    <img src="assets/1.jpg" alt="Mission 1" class="img-fluid">
+                </div>
+                <div class="col-md-8">
+                    <div class="mission-content">
+                        <h3>Sputnik 1</h3>
+                        <div class="mission-date"><i class="fas fa-calendar-alt"></i> October 4, 1957</div>
+                        <p>On October 4, 1957, the Soviet Union launched Sputnik 1, the first artificial satellite to
+                            orbit Earth, and in doing so kicked off the Space Age. The small, polished metal sphere
+                            (weighing about 83.6 kg)
+                            with four antennae transmitted a simple radio "beep-beep" that was heard around the world,
+                            yet its impact was enormous.</p>
+                        <div class="mission-details">
+                            <p><i class="fas fa-rocket"></i> First artificial Earth satellite</p>
+                            <p><i class="fas fa-globe"></i> Marked the beginning of the Space Age</p>
+                            <p><i class="fas fa-broadcast-tower"></i> Transmitted radio signals for 21 days</p>
+                        </div>
+
+                        It orbited every ~96 minutes and remained active for about 22 days until battery depletion,
+                        finally re-entering Earth's atmosphere on January 4, 1958.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card fade-in" id="vostok">
+        <div class="row g-0">
+            <div class="col-md-4 mission-img-container">
+                <img src="assets/2.jpg" alt="Mission 2" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Vostok 1</h3>
+                    <div class="mission-date"><i class="fas fa-calendar-alt"></i> April 12, 1961</div>
+                    <p>On April 12, 1961, the Soviet spacecraft Vostok 1 launched from the Baikonur Cosmodrome with
+                        cosmonaut Yuri Gagarin aboard, making him the first human to travel into space and orbit the
+                        Earth. The flight lasted about 108 minutes and completed one orbit around the planet.</p>
+                    <div class="mission-details">
+                        <p><i class="fas fa-user-astronaut"></i> First human in space</p>
+                        <p><i class="fas fa-globe-americas"></i> Completed one orbit of Earth</p>
+                        <p><i class="fas fa-clock"></i> Mission duration: 108 minutes</p>
+                    </div>
+                    before Gagarin safely returned to Earth — ejecting from his capsule and parachuting down.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add JavaScript for animations and interactivity -->
+    <script>
+        // Loading screen
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                document.querySelector('.loading').style.opacity = '0';
+                setTimeout(function () {
+                    document.querySelector('.loading').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Scroll progress indicator
+        window.addEventListener('scroll', function () {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.querySelector('.scroll-progress').style.width = scrolled + '%';
+        });
+
+        // Fade-in animation on scroll
+        document.addEventListener('DOMContentLoaded', function () {
+            const fadeElements = document.querySelectorAll('.fade-in');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Active state for mission navigation
+        window.addEventListener('scroll', function () {
+            const sections = document.querySelectorAll('.mission-card');
+            const navLinks = document.querySelectorAll('.mission-nav .nav-link');
+
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 300)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    <div class="mission-card" id="mercury">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/3.webp" alt="Mission 3" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Mercury-Redstone 3</h3>
+                    <p>On 5 May 1961, the United States launched Mercury-Redstone 3 (often called Freedom 7) with
+                        astronaut Alan Shepard Jr.
+                        aboard, marking the first American human spaceflight.
+                        Though it was a sub-orbital flight lasting about 15 minutes and reaching roughly 116 miles
+                        (187 km) in altitude, the
+                        mission achieved a fundamental milestone: it demonstrated that a human could endure the
+                        stresses of launch and re-entry
+                        and return safely.
+
+                        Shepard’s capsule, Freedom 7, was launched atop a modified Redstone rocket, and the flight
+                        illustrated the U.S.
+                        commitment in the early space race to close the gap with the Soviet Union.
+                        Next Spaceflight
+                        Though much shorter than the earlier Soviet orbital flight of Vostok 1, it spurred U.S.
+                        confidence and escalated human
+                        spaceflight efforts. The flight also allowed engineers and mission planners to test
+                        life-support, capsule control and
+                        human physiological responses in brief spaceflight.
+
+                        For your timeline site, Mercury-Redstone 3 represents the first American human spaceflight —
+                        a “first step” for NASA in
+                        the human space exploration era.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="vostok6">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/4.webp" alt="Mission 4" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Vostok 6</h3>
+                    <p>On 16 June 1963 the Soviet Union launched Vostok 6, carrying cosmonaut Valentina Tereshkova,
+                        who became the first woman
+                        in space.
+                        The solo flight lasted nearly 3 days (2 days, 22 hours, 50 minutes) during which Tereshkova
+                        completed 48 orbits of
+                        Earth.
+                        Her mission was both a technical achievement and a symbolic one: it gathered valuable
+                        biomedical data on how a female
+                        body handled weightlessness, rotation and re-entry, and it reinforced Soviet prestige in the
+                        space race.
+                        The Vostok 6 spacecraft also flew at a steep inclination of ~65°, a record for human
+                        spaceflight at the time.
+                        spacefacts.de
+                        While the spacecraft was mechanically similar to previous Vostoks, this mission emphasized
+                        the expansion of human
+                        diversity in space. For your timeline, Vostok 6 highlights the broadening of human
+                        spaceflight beyond just “first human”
+                        to “first woman” — a critical milestone.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="apollo8">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/5.jpg" alt="Mission 5" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Apollo 8</h3>
+                    <p>Launched on 21 December 1968, Apollo 8 was a pivotal U.S. spaceflight mission: the first
+                        crewed spacecraft to leave low
+                        Earth orbit, travel to the Moon, orbit it ten times, and safely return to Earth.
+                        The crew — Frank Borman, Jim Lovell and William Anders — witnessed the far side of the Moon
+                        firsthand and captured the
+                        now-iconic “Earthrise” image, showing Earth as a small blue marble rising above the lunar
+                        horizon.
+                        The mission’s success validated the performance of the Saturn V launch vehicle and the
+                        Apollo command/service module in
+                        translunar flight.
+                        Politically and scientifically, Apollo 8 shifted human spaceflight from Earth orbit to deep
+                        space — from orbiting our
+                        planet to orbiting another celestial body. For your timeline site this mission represents
+                        the threshold of human
+                        interplanetary travel: no landing, but a full lunar orbital mission.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="apollo11">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/6.webp" alt="Mission 6" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Apollo 11</h3>
+                    <p>On July 20, 1969 the Apollo 11 mission achieved what had been envisioned since the dawn of
+                        the space age: humans walking
+                        on another celestial body.
+                        Launched on July 16 aboard a Saturn V rocket, the crew of Commander Neil Armstrong, Lunar
+                        Module Pilot Buzz Aldrin and
+                        Command Module Pilot Michael Collins entered lunar orbit, then Armstrong and Aldrin
+                        descended in the Lunar Module
+                        “Eagle” and landed in the Sea of Tranquility. Two hours and about 15 minutes later Armstrong
+                        stepped onto the lunar
+                        surface, declaring “that’s one small step for man, one giant leap for mankind.”
+                        They collected lunar samples (~21 kg), deployed experiments, and then lifted off to
+                        rendezvous with Collins for the
+                        return to Earth, splashing down on July 24. For your timeline, Apollo 11 marks the first
+                        time humans walked on the Moon
+                        — a watershed moment in human space exploration, symbolizing the culmination of the race to
+                        the Moon and opening the way
+                        for broader deep-space ambitions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="salyut">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/7.webp" alt="Mission 7" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Salyut 1</h3>
+                    <p>Launched on April 19 1971, Salyut 1 was the world’s first space station, operated by the
+                        Soviet Union.
+                        The station weighed about 20 tons and provided a new paradigm: instead of brief flights in
+                        orbit, humans would now live
+                        and work in space for extended periods. Though the first crew to dock (Soyuz 10) was unable
+                        to board, the experience of
+                        Salyut laid the groundwork for long-duration habitation in space. The concept of a modular,
+                        orbiting laboratory where
+                        crews could live and experiment changed the trajectory of human spaceflight. In your
+                        timeline, Salyut 1 stands for the
+                        shift from simple orbital flights to sustained human presence in space.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="apollo-soyuz">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/8.jpg" alt="Mission 8" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Apollo-Soyuz Test Project</h3>
+                    <p>In July 1975 the Apollo–Soyuz Test Project achieved the first international human spaceflight
+                        docking mission: a U.S.
+                        Apollo spacecraft docked with a Soviet Soyuz in orbit.
+                        The joint mission was a major symbolic and technical milestone: it validated a universal
+                        docking mechanism, fostered
+                        cooperation during the Cold War era, and paved the way for future international partnerships
+                        in space exploration. For
+                        your timeline, this mission represents the turning point from rivalry to collaboration in
+                        human spaceflight.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="columbia">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/9.webp" alt="Mission 9" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Space Shuttle Columbia</h3>
+                    <p>Launched on April 12 1981, STS-1 was the inaugural flight of NASA’s Space Shuttle program,
+                        with the orbiter Columbia
+                        carrying astronauts John Young and Robert Crippen.
+                        Its key mission: to demonstrate that a reusable spacecraft could safely launch, orbit,
+                        return and land like an airplane.
+                        It completed 37 orbits in about 2 days and highlighted the shift toward routine access to
+                        space and reusability. On your
+                        timeline, STS-1 signifies the start of a new era of spaceflight: the “spaceplane” era.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="mir">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/10.webp" alt="Mission 10" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Mir Space Station</h3>
+                    <p>Launched as its first module in 1986, Mir became the first modular, continuously-inhabited
+                        space station, operating
+                        under Soviet then Russian control.
+                        Over its operational life, Mir hosted decades of international crews, research in
+                        microgravity, and set records for
+                        long-duration human spaceflight. For your timeline, Mir embodies the maturation of human
+                        space habitation and the bridge
+                        between early space stations and today’s orbiting laboratory.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="hubble">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/11.avif" alt="Mission 11" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Hubble Space Telescope</h3>
+                    <p>Launched on April 24 1990 aboard the Space Shuttle Discovery, the Hubble Space Telescope
+                        transformed our view of the
+                        Universe.
+                        By operating above Earth’s atmosphere, Hubble captured unprecedented images of galaxies,
+                        nebulae and cosmic phenomena,
+                        contributing massively to astrophysics and our understanding of the cosmos. While not a
+                        human‐flight mission per se, it
+                        changed human space exploration by the science accessible from orbit and the human capacity
+                        to observe the Universe. On
+                        your timeline, Hubble marks the scientific leap from exploration to understanding.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="iss">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/12.webp" alt="Mission 12" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>International Space Station</h3>
+                    <p>Launched initially on November 20, 1998, the ISS has been continuously inhabited by human
+                        crews since November 2000.
+                        It is a multinational orbital laboratory, shared by NASA, Roscosmos, ESA, JAXA and others,
+                        and serves as the platform
+                        for long‐duration human spaceflight, research in microgravity, and preparation for future
+                        deep space missions. In your
+                        timeline, the ISS stands for the matured cooperation and sustained presence of humans in
+                        space.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="shenzhou">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/13.jpg" alt="Mission 13" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Shenzhou 5</h3>
+                    <p>LOn October 15 2003 China launched Shenzhou 5, carrying taikonaut Yang Liwei and becoming the
+                        third nation (after
+                        USSR/Russia and USA) to send a human into space.
+                        The flight lasted about 21 hours and completed 14 orbits, achieving China’s entry into
+                        crewed spaceflight and marking a
+                        significant milestone in global space exploration. In your timeline, Shenzhou 5 highlights
+                        the expanding human presence
+                        in space beyond the initial superpowers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="spacex">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/14.webp" alt="Mission 14" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>SpaceX Falcon 9 + Dragon</h3>
+                    <p>On May 30 2020 the Crew Dragon Demo-2 mission launched NASA astronauts Doug Hurley and Bob
+                        Behnken aboard a SpaceX Crew
+                        Dragon spacecraft from U.S. soil, the first American crewed orbital launch since 2011, and
+                        the first operational
+                        commercial human spaceflight.
+                        It docked to the ISS and demonstrated that commercial partners could reliably transport
+                        humans to orbit, opening a new
+                        chapter in human spaceflight. In your timeline, this mission represents the commercial era
+                        of human space exploration.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-card" id="artemis">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="assets/15.webp" alt="Mission 15" class="img-fluid">
+            </div>
+            <div class="col-md-8">
+                <div class="mission-content">
+                    <h3>Artemis I</h3>
+                    <p>Launched on November 16 2022, Artemis I was an uncrewed test flight of NASA’s Orion
+                        spacecraft and the Space Launch
+                        System rocket, sending Orion into a lunar flyby trajectory and back to Earth after about 25
+                        days.
+                        Though no crew was on board, the mission validated critical systems for future human lunar
+                        missions and represents the
+                        next frontier: returning humans to the Moon and beyond. On your timeline, Artemis I
+                        signifies the transition to
+                        deep-space human missions and the return to lunar exploration.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Timeline Scroll Script -->
+    <script>
+        // Timeline scroll functionality
+        const timeline = document.querySelector('.timeline');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        timeline.addEventListener('mousedown', (e) => {
+            isDown = true;
+            timeline.style.cursor = 'grabbing';
+            startX = e.pageX - timeline.offsetLeft;
+            scrollLeft = timeline.parentElement.scrollLeft;
+        });
+
+        timeline.addEventListener('mouseleave', () => {
+            isDown = false;
+            timeline.style.cursor = 'grab';
+        });
+
+        timeline.addEventListener('mouseup', () => {
+            isDown = false;
+            timeline.style.cursor = 'grab';
+        });
+
+        timeline.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - timeline.offsetLeft;
+            const walk = (x - startX) * 2;
+            timeline.parentElement.scrollLeft = scrollLeft - walk;
+        });
+
+        // Add grab cursor by default
+        timeline.style.cursor = 'grab';
+
+        // Smooth scroll for timeline cards
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const content = item.querySelector('.content');
+                content.style.transition = 'transform 0.3s ease';
+                content.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    content.style.transform = 'scale(1)';
+                }, 300);
+            });
+        });
+
+        // Auto scroll timeline on load
+        window.addEventListener('load', () => {
+            const timelineContainer = document.querySelector('.timeline-container');
+            const totalScroll = timelineContainer.scrollWidth - timelineContainer.clientWidth;
+            let currentScroll = 0;
+            const scrollSpeed = 1;
+            const scrollInterval = 30;
+
+            const autoScroll = setInterval(() => {
+                if (currentScroll >= totalScroll) {
+                    clearInterval(autoScroll);
+                    return;
+                }
+                currentScroll += scrollSpeed;
+                timelineContainer.scrollLeft = currentScroll;
+            }, scrollInterval);
+
+            // Stop auto scroll on user interaction
+            timelineContainer.addEventListener('mouseenter', () => {
+                clearInterval(autoScroll);
+            });
+        });
+
+        // Enable mouse wheel scrolling
+        const container = document.querySelector('.timeline-container');
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            container.scrollLeft += e.deltaY;
+        });
+    </script>
+</body>
+
+</html>
